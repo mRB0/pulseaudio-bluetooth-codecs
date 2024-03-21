@@ -1,0 +1,3 @@
+#!/usr/bin/env zsh
+
+pactl list short cards | grep -Eo 'bluez_card.([0-9A-F]{2}_){5}[0-9A-F]{2}'

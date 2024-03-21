@@ -1,0 +1,27 @@
+#!/usr/bin/env zsh
+
+pactl list short cards | grep -Eo 'bluez_card.([0-9A-F]{2}_){5}[0-9A-F]{2}' | while IFS= read line; do
+    if [[ ! -z ${candidate+x} ]]; then
+        exec >&2
+        echo "no argument provided, but multiple bluez_cards are available"
+        echo
+        # list first one found (stored in candidate)
+        echo "$candidate"
+        # list second one found
+        echo "$line"
+        # consume any others and list them
+        while IFS= read line; do
+            echo "$line"
+        done
+        exit 3
+    fi
+
+    candidate="$line"
+done
+
+if [[ -z ${candidate+x} ]]; then
+    echo "no candidate found" >&2
+    exit 4
+fi
+
+echo "$candidate"

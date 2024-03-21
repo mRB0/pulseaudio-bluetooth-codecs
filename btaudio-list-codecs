@@ -1,0 +1,31 @@
+#!/usr/bin/env zsh
+
+zparseopts -D -- h=help c:=card
+
+if [[ $help ]]; then
+    echo "usage: $0 [-c bluez_card.XX_XX_XX_XX_XX_XX]"
+    echo
+    echo "omit the -c argument and I'll try to find the card"
+    exit 2
+fi
+
+here="${0:A:h}"
+
+if [[ -z ${card[2]+x} ]]; then
+    card="$("$here"/btaudio-find-bluez-card)"
+    if [[ -z "$card" ]]; then
+        exit 2
+    fi
+else
+    card="${card[2]}"
+fi
+
+hdr="Card $card"
+echo "$hdr"
+echo "${(l:${#hdr}::-:)}"
+
+if command -v jq >/dev/null; then
+    pactl send-message /card/"$card"/bluez list-codecs | jq -r 'map("\(.name): \(.description)") | .[]'
+else
+    pactl send-message /card/"$card"/bluez list-codecs
+fi

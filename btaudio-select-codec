@@ -1,0 +1,67 @@
+#!/usr/bin/env zsh
+
+if ! command -v jq >/dev/null; then
+    echo 'jq is required. please install it' >&2
+    exit 3
+fi
+
+zparseopts -D -- h=help c:=card
+
+if [[ $help ]]; then
+    echo "usage: $0 [-c bluez_card.XX_XX_XX_XX_XX_XX] [codec]"
+    echo
+    echo "omit the -c argument and I'll try to find the card"
+    echo
+    echo "omit codec and the last one will be chosen (because it is probably"
+    echo "the best one)"
+    exit 2
+fi
+
+if [[ ! -z ${1+x} ]]; then
+    use_codec="$1"
+fi
+
+here="${0:A:h}"
+
+if [[ -z ${card[2]+x} ]]; then
+    card="$("$here"/btaudio-find-bluez-card)"
+    if [[ -z "$card" ]]; then
+        exit 2
+    fi
+else
+    card="${card[2]}"
+fi
+
+hdr="Available codecs for card $card"
+echo "$hdr"
+echo "${(l:${#hdr}::-:)}"
+
+pactl send-message /card/"$card"/bluez list-codecs | jq -r 'map(.name) | .[]' | while IFS= read line; do
+
+    if [[ -z ${use_codec+x} ]]; then
+        if [[ ! -z ${best_codec+x} ]]; then
+            echo "$best_codec"
+        fi
+        best_codec="$line"
+    else
+        if [[ $use_codec == $line ]]; then
+            echo "$line <-- you chose this one"
+            best_codec="$line"
+        else
+            echo "$line"
+        fi
+    fi
+
+done
+
+if [[ -z "$best_codec" ]]; then
+    echo
+    echo "codec not found!!  better luck next time"
+    exit 3
+fi
+
+if [[ -z ${use_codec+x} ]]; then
+    echo "$best_codec <-- choosing this one"
+fi
+
+pactl send-message /card/"$card"/bluez switch-codec "\"$best_codec\""
