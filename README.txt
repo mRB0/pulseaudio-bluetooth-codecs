@@ -38,7 +38,7 @@ btaudio-show-current-codec
 
 btaudio-find-bluez-card
 
-    If only one bluez audio cafrd is available, find it and list it to
+    If only one bluez audio card is available, find it and list it to
     stdout.
 
     Otherwise exit with an error message.
