@@ -3,6 +3,8 @@ TL;DR: btaudio-select-codec
     Run it with no arguments and it will try to pick the best codec if
     you only have one Bluetooth audio device.
 
+    Install jq first or else it won't work.
+
 
 I use these scripts (mainly btaudio-select-best-codec) to switch to
 the best codec supported by my bluetooth audio devices.
