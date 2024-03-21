@@ -6,8 +6,8 @@ TL;DR: btaudio-select-codec
     Install jq first or else it won't work.
 
 
-I use these scripts (mainly btaudio-select-best-codec) to switch to
-the best codec supported by my bluetooth audio devices.
+I use these scripts (mainly btaudio-select-codec) to switch to the
+best codec supported by my bluetooth audio devices.
 
 The devices come up using the sbc codec which is the worst audio
 quality, but I can use eg sbc_xq_552 for higher audio quality. I have
